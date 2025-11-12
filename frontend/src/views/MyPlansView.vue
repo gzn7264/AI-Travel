@@ -1,7 +1,17 @@
 <template>
   <div class="my-plans-container">
     <header class="page-header">
-      <h1>我的旅行计划</h1>
+      <div class="header-content">
+        <h1>我的旅行计划</h1>
+        <el-button 
+          icon="el-icon-home" 
+          type="primary" 
+          size="small" 
+          class="back-home-btn"
+          @click="navigateToHome"
+          title="返回首页"
+        />
+      </div>
     </header>
     
     <main class="page-main">
@@ -419,8 +429,29 @@ onMounted(() => {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 30px 0;
-  text-align: center;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back-home-btn {
+  background-color: #1989fa;
+  border-color: #1989fa;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
 }
 
 .page-header h1 {

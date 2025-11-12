@@ -5,21 +5,36 @@ export default {
   // 用户登录
   async login(credentials) {
     try {
+      console.log('发送登录请求到后端:', '/auth/login', '请求参数:', credentials);
+      
       // 发送登录请求到后端API
       const response = await axiosInstance.post('/auth/login', credentials);
       
+      console.log('收到登录响应:', response);
+      
       // 保存token和用户信息到本地存储
       if (response.success && response.data) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userInfo', JSON.stringify(response.data.user));
+        localStorage.setItem('token', response.data.token || '');
+        localStorage.setItem('userInfo', JSON.stringify(response.data.user || {}));
+        // 可选：存储Supabase令牌（如果需要）
+        if (response.data.supabase_tokens) {
+          localStorage.setItem('supabaseTokens', JSON.stringify(response.data.supabase_tokens));
+        }
       }
       
       return response;
     } catch (error) {
-      console.error('登录失败:', error);
+      console.error('登录请求异常:', error);
+      console.error('异常详情:', { 
+        status: error.response?.status, 
+        data: error.response?.data,
+        message: error.message
+      });
+      
       return {
         success: false,
-        error: error.response?.data?.message || error.message || '登录失败，请稍后重试'
+        error: error.response?.data?.message || error.response?.data?.error || error.message || '登录失败，请稍后重试',
+        status: error.response?.status
       };
     }
   },
@@ -27,14 +42,25 @@ export default {
   // 用户注册
   async register(userData) {
     try {
+      console.log('发送注册请求到后端:', '/auth/register', '请求参数:', userData);
+      
       // 发送注册请求到后端API
       const response = await axiosInstance.post('/auth/register', userData);
+      
+      console.log('收到注册响应:', response);
       return response;
     } catch (error) {
-      console.error('注册失败:', error);
+      console.error('注册请求异常:', error);
+      console.error('异常详情:', { 
+        status: error.response?.status, 
+        data: error.response?.data,
+        message: error.message
+      });
+      
       return {
         success: false,
-        error: error.response?.data?.message || error.message || '注册失败，请稍后重试'
+        error: error.response?.data?.message || error.response?.data?.error || error.message || '注册失败，请稍后重试',
+        status: error.response?.status
       };
     }
   },
@@ -47,7 +73,7 @@ export default {
       
       // 更新本地存储的用户信息
       if (response.success && response.data) {
-        localStorage.setItem('userInfo', JSON.stringify(response.data));
+        localStorage.setItem('userInfo', JSON.stringify(response.data.user || response.data));
       }
       
       return response;
@@ -68,7 +94,7 @@ export default {
       
       // 更新本地存储的用户信息
       if (response.success && response.data) {
-        localStorage.setItem('userInfo', JSON.stringify(response.data));
+        localStorage.setItem('userInfo', JSON.stringify(response.data.user || response.data));
       }
       
       return response;

@@ -44,6 +44,7 @@
 import { ref, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
+import userService from '../api/userService';
 
 const router = useRouter();
 const loginFormRef = ref(null);
@@ -72,23 +73,49 @@ const handleLogin = async () => {
     await loginFormRef.value.validate();
     loading.value = true;
     
-    // 模拟登录请求
-    setTimeout(() => {
-      loading.value = false;
-      // 模拟成功登录
+    console.log('登录请求参数:', {
+      email: loginForm.account,
+      password: '******' // 不打印密码
+    });
+    
+    // 调用真实的后端登录API
+    const response = await userService.login({
+      email: loginForm.account, // 后端期望email字段
+      password: loginForm.password
+    });
+    
+    console.log('登录响应:', response);
+    loading.value = false;
+    
+    if (response.success) {
+      // 登录成功
       ElMessage.success('登录成功');
-      // 保存token到localStorage（实际项目中应该使用更安全的存储方式）
-      localStorage.setItem('token', 'mock_token_' + Date.now());
-      localStorage.setItem('userInfo', JSON.stringify({
-        id: '1',
-        account: loginForm.account,
-        name: '旅行者'
-      }));
-      // 跳转到首页
-      router.push('/');
-    }, 1000);
+      
+      // 保存token和用户信息到localStorage
+      if (response.data) {
+        localStorage.setItem('token', response.data.token || '');
+        localStorage.setItem('userInfo', JSON.stringify(response.data.user || {}));
+        
+        // 保存Supabase令牌（如果有）
+        if (response.data.supabase_tokens) {
+          localStorage.setItem('supabaseTokens', JSON.stringify(response.data.supabase_tokens));
+        }
+      }
+      
+      // 跳转到首页或重定向页
+      const redirect = router.currentRoute.value.query.redirect || '/';
+      console.log('登录成功，准备跳转到:', redirect);
+      router.push(redirect);
+    } else {
+      // 登录失败
+      console.error('登录失败原因:', response.error || response.message || '未知错误');
+      ElMessage.error(response.error || response.message || '登录失败，请检查您的邮箱和密码');
+    }
   } catch (error) {
-    console.log('登录验证失败:', error);
+    loading.value = false;
+    console.error('登录过程发生错误:', error);
+    console.error('错误详情:', error.response?.data || error);
+    ElMessage.error('登录过程发生错误，请稍后重试');
   }
 };
 

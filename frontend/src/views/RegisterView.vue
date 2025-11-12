@@ -16,6 +16,13 @@
             prefix-icon="el-icon-user"
           />
         </el-form-item>
+        <el-form-item label="用户名" prop="nickname">
+          <el-input
+            v-model="registerForm.nickname"
+            placeholder="请设置2-20个字符的用户名"
+            prefix-icon="el-icon-user-solid"
+          />
+        </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input
             v-model="registerForm.password"
@@ -54,6 +61,7 @@
 import { ref, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
+import userService from '../api/userService';
 
 const router = useRouter();
 const registerFormRef = ref(null);
@@ -61,6 +69,7 @@ const loading = ref(false);
 
 const registerForm = reactive({
   account: '',
+  nickname: '',
   password: '',
   confirmPassword: '',
   agreeTerms: false
@@ -69,7 +78,7 @@ const registerForm = reactive({
 const rules = {
   account: [
     { required: true, message: '请输入邮箱或手机号', trigger: 'blur' },
-    {
+    { 
       validator: (rule, value, callback) => {
         // 简单的邮箱或手机号验证
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -82,6 +91,10 @@ const rules = {
       },
       trigger: 'blur'
     }
+  ],
+  nickname: [
+    { required: true, message: '请设置用户名', trigger: 'blur' },
+    { min: 2, max: 20, message: '用户名长度必须在2-20个字符之间', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请设置密码', trigger: 'blur' },
@@ -115,17 +128,28 @@ const handleRegister = async () => {
     
     loading.value = true;
     
-    // 模拟注册请求
-    setTimeout(() => {
-      loading.value = false;
+    // 调用真实的后端注册API
+      const response = await userService.register({
+        email: registerForm.account, // 后端期望email字段
+        password: registerForm.password,
+        nickname: registerForm.nickname // 添加昵称字段
+      });
+    
+    loading.value = false;
+    
+    if (response.success) {
       ElMessage.success('注册成功！正在跳转到登录页面...');
       // 延迟跳转到登录页面
       setTimeout(() => {
         router.push('/login');
       }, 1500);
-    }, 1500);
+    } else {
+      ElMessage.error(response.error || '注册失败，请稍后重试');
+    }
   } catch (error) {
-    console.log('注册验证失败:', error);
+    loading.value = false;
+    console.error('注册过程发生错误:', error);
+    ElMessage.error('注册过程发生错误，请稍后重试');
   }
 };
 

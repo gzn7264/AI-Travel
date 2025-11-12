@@ -18,7 +18,7 @@ export const useUserStore = defineStore('user', {
     // 获取用户基本信息
     getUserInfo: (state) => state.userInfo,
     // 获取用户名
-    getUserName: (state) => state.userInfo?.name || '游客',
+    getUserName: (state) => state.userInfo?.nickname || state.userInfo?.name || '游客',
     // 获取用户邮箱
     getUserEmail: (state) => state.userInfo?.email || '',
     // 检查是否已登录

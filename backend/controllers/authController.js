@@ -1,6 +1,6 @@
 const authService = require('../services/authService');
-const { successResponse, errorResponse, validationErrorResponse } = require('../utils/errorHandler');
 const { body, validationResult } = require('express-validator');
+const { errorResponse, badRequestResponse, successResponse } = require('../utils/errorHandler');
 
 /**
  * 用户认证控制器
@@ -35,15 +35,22 @@ class AuthController {
       // 验证请求数据
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return validationErrorResponse(res, errors.array());
+        return badRequestResponse(res, errors.array().map(err => err.msg).join(', '));
       }
 
       const { email, password, nickname } = req.body;
       
-      // 调用服务层注册
+      console.log('收到注册请求:', email);
+      
+      // 调用服务层注册（使用Supabase内置auth表）
       const result = await authService.register(email, password, nickname);
       
       if (!result.success) {
+        console.error('注册失败:', result.error);
+        // 根据错误类型返回适当的状态码
+        if (result.error.includes('已被注册')) {
+          return errorResponse(res, result.error, 409); // 冲突状态码
+        }
         return errorResponse(res, result.error, 400);
       }
       
@@ -62,19 +69,40 @@ class AuthController {
       // 验证请求数据
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return validationErrorResponse(res, errors.array());
+        return badRequestResponse(res, errors.array().map(err => err.msg).join(', '));
       }
 
       const { email, password } = req.body;
       
-      // 调用服务层登录
+      console.log('收到登录请求:', email);
+      
+      // 调用服务层登录（使用Supabase内置auth表）
       const result = await authService.login(email, password);
       
       if (!result.success) {
-        return errorResponse(res, result.error, 401);
+        console.error('登录失败:', result.error);
+        // 根据错误类型返回适当的状态码
+        if (result.error.includes('邮箱或密码错误')) {
+          return errorResponse(res, result.error, 401); // 未授权状态码
+        }
+        return errorResponse(res, result.error, 400);
       }
       
-      return successResponse(res, '登录成功', result.data);
+      // 返回成功响应，包含用户信息、JWT令牌和Supabase令牌
+      return res.status(200).json({
+        success: true,
+        message: '登录成功',
+        data: {
+          user: result.data.user,
+          token: result.data.token,
+          // 可选：如果前端需要直接使用Supabase令牌
+          supabase_tokens: {
+            access_token: result.data.access_token,
+            refresh_token: result.data.refresh_token,
+            expires_at: result.data.expires_at
+          }
+        }
+      });
     } catch (error) {
       console.error('登录控制器错误:', error);
       return errorResponse(res, '登录失败', 500);
@@ -86,7 +114,14 @@ class AuthController {
    */
   async getUserInfo(req, res) {
     try {
+      // 确保用户已登录
+      if (!req.user || !req.user.user_id) {
+        return errorResponse(res, '用户未登录', 401);
+      }
+      
       const userId = req.user.user_id;
+      
+      console.log('获取用户信息:', userId);
       
       const result = await authService.getUserInfo(userId);
       
@@ -113,9 +148,11 @@ class AuthController {
       }
 
       const userId = req.user.user_id;
-      const { nickname, avatar_url } = req.body;
+      const updateData = req.body;
       
-      const result = await authService.updateUserInfo(userId, { nickname, avatar_url });
+      console.log('更新用户信息:', userId);
+      
+      const result = await authService.updateUserInfo(userId, updateData);
       
       if (!result.success) {
         return errorResponse(res, result.error, 400);
@@ -142,6 +179,8 @@ class AuthController {
       const userId = req.user.user_id;
       const { oldPassword, newPassword } = req.body;
       
+      console.log('修改密码请求:', userId);
+      
       const result = await authService.changePassword(userId, oldPassword, newPassword);
       
       if (!result.success) {
@@ -160,7 +199,14 @@ class AuthController {
    */
   async logout(req, res) {
     try {
-      const result = await authService.logout();
+      // 确保用户已登录
+      if (!req.user || !req.user.user_id) {
+        return errorResponse(res, '用户未登录', 401);
+      }
+      
+      console.log('用户登出请求:', req.user.user_id);
+      
+      const result = await authService.logout(req.user.user_id);
       
       if (!result.success) {
         return errorResponse(res, result.error, 400);
@@ -179,6 +225,8 @@ class AuthController {
   async deleteAccount(req, res) {
     try {
       const userId = req.user.user_id;
+      
+      console.log('删除账户请求:', userId);
       
       const result = await authService.deleteAccount(userId);
       

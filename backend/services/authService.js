@@ -1,10 +1,34 @@
-const { supabase, supabaseService, isSimulated } = require('../config/supabase');
-const { generateToken } = require('../utils/jwtUtils');
+const { supabase, supabaseService, isSimulated: configIsSimulated } = require('../config/supabase');
+const { 
+  generateToken, 
+  verifyToken, 
+  parseSupabaseToken,
+  extractUserFromSupabaseAuth 
+} = require('../utils/jwtUtils');
 const bcrypt = require('bcryptjs');
 
 // 模拟模式下的内存存储
 let mockUsers = [];
 let nextUserId = 1;
+
+// 模拟模式标记 - 使用配置中的模拟模式设置
+const isSimulated = configIsSimulated;
+console.log('AuthService 模式:', isSimulated ? '模拟模式' : '实际Supabase模式');
+
+// 选择合适的客户端：根据操作类型选择标准客户端或服务角色客户端
+const getSupabaseClient = (requiresAdmin = false) => {
+  // 对于需要绕过RLS的操作，使用服务角色客户端
+  if (!isSimulated && requiresAdmin && supabaseService) {
+    return supabaseService;
+  }
+  // 其他情况使用标准客户端
+  return supabase;
+};
+
+console.log(`Supabase服务模式: ${isSimulated ? '模拟模式' : '实际连接模式'}`);
+if (!isSimulated && supabaseService) {
+  console.log('服务角色客户端已启用，可用于绕过RLS的管理操作');
+}
 
 /**
  * 用户认证服务
@@ -48,7 +72,7 @@ class AuthService {
           user_id: user.id,
           email: user.email,
           nickname
-        });
+        }, true);
         
         console.log('模拟模式: 用户注册成功', user.id);
         return {
@@ -58,58 +82,97 @@ class AuthService {
               user_id: user.id,
               email: user.email,
               nickname
-            }
+            },
+            token
           }
         };
       }
       
-      // 非模拟模式 - 使用Supabase
-      // 检查邮箱是否已存在
-      const { data: existingUser, error: checkError } = await supabase
-        .from('auth.users')
-        .select('email')
-        .eq('email', email)
-        .single();
+      // 非模拟模式 - 使用Supabase内置auth表
+      console.log('开始使用Supabase auth注册用户:', email);
       
-      if (existingUser) {
-        throw new Error('该邮箱已被注册');
-      }
-      
-      // 创建用户
+      // 使用Supabase内置的auth.signUp方法
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          // 将用户元数据存储在Supabase auth表中
           data: {
             nickname,
-            created_at: new Date().toISOString()
-          }
+            created_at: new Date().toISOString(),
+            role: 'user' // 添加用户角色
+          },
+          // 设置自动确认邮箱（开发环境）
+          emailRedirectTo: 'http://localhost:3000/api/auth/callback'
         }
       });
       
       if (error) {
-        throw error;
+        console.error('Supabase注册错误:', error);
+        // 根据错误类型返回更友好的错误信息
+        if (error.code === 'auth/email-already-exists' || error.message.includes('User already registered')) {
+          throw new Error('该邮箱已被注册');
+        }
+        throw new Error('注册失败: ' + error.message);
       }
       
-      // 生成JWT令牌
+      if (!data.user) {
+        throw new Error('注册成功但未返回用户信息');
+      }
+      
+      console.log('Supabase注册成功，用户ID:', data.user.id);
+      
+      // 尝试使用服务角色客户端自动确认邮箱
+      if (supabaseService) {
+        try {
+          console.log('尝试自动确认邮箱:', data.user.id);
+          // 使用服务角色客户端更新用户信息，确认邮箱
+          const { error: confirmError } = await supabaseService.auth.admin.updateUserById(data.user.id, {
+            email_confirmed_at: new Date().toISOString()
+          });
+          if (confirmError) {
+            console.log('自动确认邮箱失败，但继续处理:', confirmError.message);
+          } else {
+            console.log('邮箱自动确认成功:', data.user.id);
+          }
+        } catch (e) {
+          console.log('邮箱确认过程出错:', e.message);
+        }
+      }
+      
+      // 使用工具函数提取用户信息
+      const user = extractUserFromSupabaseAuth({ data });
+      
+      if (!user) {
+        throw new Error('无法提取用户信息');
+      }
+      
+      // 生成与Supabase兼容的JWT令牌
       const token = generateToken({
-        user_id: data.user.id,
-        email: data.user.email,
-        nickname
-      });
+        user_id: user.user_id,
+        email: user.email,
+        nickname: user.nickname,
+        // 包含Supabase返回的用户元数据
+        user_metadata: user.user_metadata
+      }, true);
       
       return {
         success: true,
         data: {
           user: {
-            user_id: data.user.id,
-            email: data.user.email,
-            nickname
-          }
+            user_id: user.user_id,
+            email: user.email,
+            nickname: user.nickname,
+            created_at: user.created_at
+          },
+          token,
+          // 返回Supabase的访问令牌和刷新令牌（如果需要）
+          access_token: data.session?.access_token,
+          refresh_token: data.session?.refresh_token
         }
       };
     } catch (error) {
-      console.error('注册失败:', error);
+      console.error('用户注册失败:', error);
       return { success: false, error: error.message };
     }
   }
@@ -124,8 +187,7 @@ class AuthService {
       // 模拟模式处理
       if (isSimulated) {
         // 查找用户
-        const user = mockUsers.find(user => user.email === email);
-        
+        const user = mockUsers.find(u => u.email === email);
         if (!user) {
           throw new Error('邮箱或密码错误');
         }
@@ -136,12 +198,12 @@ class AuthService {
           throw new Error('邮箱或密码错误');
         }
         
-        // 生成JWT令牌
+        // 生成与Supabase兼容的JWT令牌
         const token = generateToken({
           user_id: user.id,
           email: user.email,
-          username: user.username
-        });
+          nickname: user.nickname
+        }, true);
         
         console.log('模拟模式: 用户登录成功', user.id);
         return {
@@ -157,48 +219,69 @@ class AuthService {
         };
       }
       
-      // 非模拟模式 - 使用Supabase
-      // 使用Supabase认证登录
+      // 非模拟模式 - 使用Supabase内置auth表
+      console.log('开始使用Supabase auth登录用户:', email);
+      
+      // 直接使用标准客户端登录
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
       
       if (error) {
-        throw new Error('邮箱或密码错误');
+        console.error('Supabase登录错误:', error);
+        // 根据错误类型返回更友好的错误信息
+        if (error.code === 'auth/user-not-found' || 
+            error.code === 'auth/wrong-password' || 
+            error.message.includes('Invalid login credentials')) {
+          throw new Error('邮箱或密码错误');
+        }
+        throw new Error('登录失败: ' + error.message);
       }
       
-      // 获取用户详细信息
-      const { data: userDetails, error: detailsError } = await supabase
-        .from('auth.users')
-        .select('id, email, user_metadata')
-        .eq('id', data.user.id)
-        .single();
-      
-      if (detailsError) {
-        throw detailsError;
+      if (!data.user) {
+        throw new Error('登录成功但未返回用户信息');
       }
       
-      // 生成JWT令牌
+      console.log('Supabase登录成功，用户ID:', data.user.id);
+      
+      // 使用工具函数提取用户信息
+      const user = extractUserFromSupabaseAuth({ data });
+      
+      if (!user) {
+        throw new Error('无法提取用户信息');
+      }
+      
+      // 生成与Supabase兼容的JWT令牌
       const token = generateToken({
-        user_id: data.user.id,
-        email: data.user.email,
-        username: userDetails.user_metadata?.username || '用户'
-      });
+        user_id: user.user_id,
+        email: user.email,
+        nickname: user.nickname || '',
+        // 包含Supabase返回的用户元数据
+        user_metadata: user.user_metadata,
+        // 包含用户角色信息
+        role: user.role || 'user'
+      }, true);
       
       return {
         success: true,
         data: {
           user: {
-            user_id: data.user.id,
-            email: data.user.email,
-            nickname: userDetails.user_metadata?.nickname || '用户'
+            user_id: user.user_id,
+            email: user.email,
+            nickname: user.nickname || '',
+            created_at: user.created_at,
+            role: user.role || 'user'
           },
-          token
+          token,
+          // 返回Supabase的访问令牌和刷新令牌
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_at: data.session.expires_at
         }
       };
     } catch (error) {
-      console.error('登录失败:', error);
+      console.error('用户登录失败:', error);
       return { success: false, error: error.message };
     }
   }

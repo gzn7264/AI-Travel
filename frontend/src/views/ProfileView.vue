@@ -1,7 +1,13 @@
 <template>
   <div class="profile-container">
     <div class="profile-header-section">
-      <h1>个人中心</h1>
+      <div class="header-content">
+        <h1>个人中心</h1>
+        <el-button type="primary" @click="goToHome" class="back-home-btn">
+          <el-icon><House /></el-icon>
+          返回首页
+        </el-button>
+      </div>
     </div>
     
     <div class="profile-content-wrapper">
@@ -308,6 +314,7 @@
 import { ref, reactive, onMounted, computed } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
+import { House } from '@element-plus/icons-vue';
 
 const router = useRouter();
 const formRef = ref(null);
@@ -509,6 +516,10 @@ const navigateToPrivacy = () => {
   ElMessage.info('隐私设置功能开发中...');
 };
 
+const goToHome = () => {
+  router.push('/');
+};
+
 // 加载用户信息
 const loadUserInfo = () => {
   const userInfoStr = localStorage.getItem('userInfo');
@@ -553,8 +564,25 @@ onMounted(() => {
 }
 
 .profile-header-section {
-  text-align: center;
   margin-bottom: 30px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-content h1 {
+  margin: 0;
+}
+
+.back-home-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .profile-header-section h1 {

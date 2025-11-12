@@ -1,5 +1,9 @@
 const { supabase } = require('../config/supabase');
 const dbService = require('./dbService');
+const LLMService = require('./llmService');
+
+// 创建LLM服务实例
+const llmService = new LLMService();
 
 /**
  * 旅行计划服务
@@ -11,24 +15,44 @@ class TravelPlanService {
    */
   async generatePlan(planData) {
     try {
-      // 这里模拟AI生成的旅行计划
-      // 实际应该调用阿里云百炼API或其他AI服务
-      const mockPlan = {
-        name: planData.destination + '旅行计划',
-        destination: planData.destination,
-        start_date: planData.start_date,
-        end_date: planData.end_date,
-        travelers_count: planData.travelers_count,
-        budget: planData.budget,
-        preferences: planData.preferences,
-        nodes: this.generateMockNodes(planData)
-      };
+      // 使用大语言模型服务生成旅行计划
+      console.log('正在调用大语言模型生成旅行计划...');
+      const llmResponse = await llmService.generateTravelPlan(planData);
       
-      return { success: true, data: mockPlan };
+      // 将LLM返回的数据转换为数据库格式
+      const dbFormatPlan = llmService.transformToDatabaseFormat(llmResponse, planData);
+      
+      return { success: true, data: dbFormatPlan };
     } catch (error) {
       console.error('生成旅行计划失败:', error);
-      return { success: false, error: error.message };
+      // 如果LLM服务调用失败，返回模拟数据作为备用方案
+      console.log('使用备用模拟数据生成旅行计划...');
+      try {
+        const mockPlan = this.generateMockPlan(planData);
+        return { success: true, data: mockPlan, isMock: true };
+      } catch (mockError) {
+        return { success: false, error: mockError.message };
+      }
     }
+  }
+  
+  /**
+   * 备用方案：生成模拟旅行计划
+   * @param {object} planData - 计划数据
+   */
+  generateMockPlan(planData) {
+    const mockPlan = {
+      name: planData.destination + '旅行计划',
+      destination: planData.destination,
+      start_date: planData.start_date,
+      end_date: planData.end_date,
+      travelers_count: planData.travelers_count,
+      budget: planData.budget,
+      preferences: planData.preferences,
+      nodes: this.generateMockNodes(planData)
+    };
+    
+    return mockPlan;
   }
 
   /**
@@ -55,6 +79,7 @@ class TravelPlanService {
         location: planData.destination + '主要景点',
         description: '游览当地著名景点',
         budget: 50,
+        actual_cost: 0,
         sequence_order: i * 4
       });
       
@@ -66,6 +91,7 @@ class TravelPlanService {
         location: planData.destination + '特色餐厅',
         description: '品尝当地美食',
         budget: 80,
+        actual_cost: 0,
         sequence_order: i * 4 + 1
       });
       
@@ -77,6 +103,7 @@ class TravelPlanService {
         location: planData.destination + '文化景点',
         description: '体验当地文化',
         budget: 30,
+        actual_cost: 0,
         sequence_order: i * 4 + 2
       });
       
@@ -89,6 +116,7 @@ class TravelPlanService {
           location: planData.destination + '酒店',
           description: '入住酒店休息',
           budget: 200,
+          actual_cost: 0,
           sequence_order: i * 4 + 3
         });
       }
@@ -212,12 +240,17 @@ class TravelPlanService {
         order: { field: 'sequence_order', ascending: true }
       });
       
+      const planWithNodes = {
+        ...planResult.data,
+        nodes: nodesResult.data
+      };
+      
+      // 转换为前端所需格式
+      const frontendFormatPlan = llmService.transformToFrontendFormat(planWithNodes);
+      
       return {
         success: true,
-        data: {
-          ...planResult.data,
-          nodes: nodesResult.data
-        }
+        data: frontendFormatPlan
       };
     } catch (error) {
       console.error('获取旅行计划详情失败:', error);

@@ -5,7 +5,7 @@
         <h1>AI旅行规划师</h1>
         <div class="user-info">
           <el-dropdown>
-            <span class="user-name">{{ currentUser?.name || '游客' }}</span>
+            <span class="user-name">{{ currentUser?.nickname || currentUser?.name || '游客' }}</span>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="navigateToProfile">个人中心</el-dropdown-item>
@@ -34,14 +34,23 @@
         </div>
         <div v-else-if="travelPlan" class="plan-content">
           <div class="plan-header">
-            <h3>{{ travelPlan.name }}</h3>
-            <div class="plan-meta">
-              <span class="destination">{{ travelPlan.destination }}</span>
-              <span class="date-range">{{ formatDate(travelPlan.startDate) }} - {{ formatDate(travelPlan.endDate) }}</span>
-              <span class="travelers">{{ travelPlan.travelersCount }}人同行</span>
-              <span class="budget">预算: ¥{{ travelPlan.budget }}</span>
-            </div>
-          </div>
+      <h3>{{ travelPlan.name }}</h3>
+      <div class="plan-meta">
+        <span class="destination">{{ travelPlan.destination }}</span>
+        <span class="date-range">{{ formatDate(travelPlan.startDate) }} - {{ formatDate(travelPlan.endDate) }}</span>
+        <span class="travelers">{{ travelPlan.travelersCount }}人同行</span>
+        <span class="budget">预算: ¥{{ travelPlan.budget }}</span>
+        <el-button 
+          type="primary" 
+          size="small" 
+          @click="saveTravelPlan"
+          :loading="loading"
+          class="save-btn-top"
+        >
+          保存计划
+        </el-button>
+      </div>
+    </div>
           
           <div class="plan-days">
             <div v-for="(day, index) in planByDay" :key="index" class="day-section">
@@ -71,10 +80,9 @@
           </div>
           
           <div class="plan-actions">
-            <el-button type="primary" @click="saveTravelPlan">保存计划</el-button>
-            <el-button type="success" @click="shareTravelPlan">分享计划</el-button>
-            <el-button @click="generateNewPlan">生成新计划</el-button>
-          </div>
+        <el-button type="success" @click="shareTravelPlan">分享计划</el-button>
+        <el-button @click="generateNewPlan">生成新计划</el-button>
+      </div>
         </div>
         <div v-else class="empty-plan">
           <el-empty description="暂无旅行计划，输入您的需求并提交生成" />
@@ -89,6 +97,7 @@ import { ref, computed, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
 import SpeechInput from '../components/speech-recognition/SpeechInput.vue';
+import axiosInstance from '../api/axiosInstance.js';
 
 const router = useRouter();
 const travelRequirement = ref('');
@@ -154,7 +163,7 @@ const getNodeTypeIcon = (type) => {
 };
 
 // 生成旅行计划
-const generateTravelPlan = (requirement) => {
+const generateTravelPlan = async (requirement) => {
   if (!requirement.trim()) {
     ElMessage.warning('请输入旅行需求');
     return;
@@ -163,120 +172,93 @@ const generateTravelPlan = (requirement) => {
   loading.value = true;
   showPlanSection.value = true;
   
-  // 模拟API调用
-  setTimeout(() => {
-    // Mock数据
+  try {
+    // 调用后端百炼大语言模型API，设置180秒超时
+    const response = await axiosInstance.post('/plans/generate', {
+      prompt: requirement
+    }, {
+      timeout: 180000 // 180秒超时
+    });
+
+    // 处理后端返回的数据，确保格式符合前端渲染要求
+    const planData = response.data;
+    
+    // 规范化计划数据格式
     travelPlan.value = {
-      id: 'mock_plan_' + Date.now(),
-      name: '北京三日游',
-      destination: '北京',
-      startDate: '2024-01-15',
-      endDate: '2024-01-17',
-      budget: 5000,
-      travelersCount: 2,
+      id: planData.id || 'plan_' + Date.now(),
+      name: planData.name || '智能生成旅行计划',
+      destination: planData.destination || '未知目的地',
+      startDate: planData.startDate || new Date().toISOString().split('T')[0],
+      endDate: planData.endDate || new Date().toISOString().split('T')[0],
+      budget: planData.budget || 0,
+      travelersCount: planData.travelersCount || 1,
       preferences: requirement,
-      nodes: [
-        // 第一天
-        {
-          id: 'node_1',
-          node_type: '景点',
-          date: '2024-01-15',
-          time: '09:00',
-          location: '故宫博物院',
-          description: '参观世界上最大的古代宫殿建筑群',
-          estimated_duration: '4小时',
-          budget: 80,
-          sequence_order: 1
-        },
-        {
-          id: 'node_2',
-          node_type: '餐饮',
-          date: '2024-01-15',
-          time: '13:30',
-          location: '王府井大街',
-          description: '品尝北京特色小吃',
-          estimated_duration: '1.5小时',
-          budget: 150,
-          sequence_order: 2
-        },
-        {
-          id: 'node_3',
-          node_type: '景点',
-          date: '2024-01-15',
-          time: '15:30',
-          location: '天安门广场',
-          description: '游览世界上最大的城市广场',
-          estimated_duration: '1小时',
-          budget: 0,
-          sequence_order: 3
-        },
-        {
-          id: 'node_4',
-          node_type: '住宿',
-          date: '2024-01-15',
-          time: '19:00',
-          location: '北京饭店',
-          description: '四星级酒店，位于市中心',
-          estimated_duration: '整晚',
-          budget: 800,
-          sequence_order: 4
-        },
-        // 第二天
-        {
-          id: 'node_5',
-          node_type: '景点',
-          date: '2024-01-16',
-          time: '09:00',
-          location: '长城',
-          description: '不到长城非好汉',
-          estimated_duration: '5小时',
-          budget: 120,
-          sequence_order: 1
-        },
-        {
-          id: 'node_6',
-          node_type: '餐饮',
-          date: '2024-01-16',
-          time: '14:30',
-          location: '农家乐',
-          description: '品尝农家菜',
-          estimated_duration: '1小时',
-          budget: 100,
-          sequence_order: 2
-        },
-        // 第三天
-        {
-          id: 'node_7',
-          node_type: '景点',
-          date: '2024-01-17',
-          time: '10:00',
-          location: '颐和园',
-          description: '皇家园林博物馆',
-          estimated_duration: '3小时',
-          budget: 60,
-          sequence_order: 1
-        }
-      ]
+      nodes: planData.nodes || []
     };
     
-    loading.value = false;
+    // 确保nodes中的每个节点都有正确的类型和属性
+    if (travelPlan.value.nodes.length > 0) {
+      travelPlan.value.nodes = travelPlan.value.nodes.map((node, index) => ({
+        id: node.id || `node_${index}`,
+        node_type: node.node_type || '景点',
+        date: node.date || travelPlan.value.startDate,
+        time: node.time || '全天',
+        location: node.location || '未命名地点',
+        description: node.description || '',
+        estimated_duration: node.estimated_duration || '',
+        budget: node.budget || 0,
+        sequence_order: node.sequence_order || index
+      }));
+    }
+    
     ElMessage.success('旅行计划生成成功！');
-  }, 2000);
+  } catch (error) {
+    console.error('生成旅行计划失败:', error);
+    if (error.code === 'ECONNABORTED') {
+      ElMessage.error('请求超时，请稍后重试');
+    } else if (error.response) {
+      ElMessage.error(`生成失败: ${error.response.data.message || '服务器错误'}`);
+    } else {
+      ElMessage.error('网络错误，请检查您的网络连接');
+    }
+  } finally {
+    loading.value = false;
+  }
 };
 
 // 保存旅行计划
-const saveTravelPlan = () => {
+const saveTravelPlan = async () => {
   if (!currentUser.value) {
     ElMessage.warning('请先登录后再保存计划');
     router.push('/login');
     return;
   }
   
-  // 模拟保存请求
-  setTimeout(() => {
+  if (!travelPlan.value) {
+    ElMessage.warning('没有可保存的旅行计划');
+    return;
+  }
+  
+  loading.value = true;
+  try {
+    // 调用后端API保存到Supabase数据库
+    const response = await axiosInstance.post('/plans', {
+      ...travelPlan.value,
+      userId: currentUser.value.id
+    });
+    
+    loading.value = false;
     ElMessage.success('旅行计划保存成功！');
-    router.push('/my-plans');
-  }, 1000);
+    navigateToMyPlans();
+  } catch (error) {
+    console.error('保存旅行计划失败:', error);
+    loading.value = false;
+    if (error.response) {
+      ElMessage.error(`保存失败: ${error.response.data.message || '服务器错误'}`);
+    } else {
+      ElMessage.error('网络错误，请检查您的网络连接');
+    }
+  }
 };
 
 // 分享旅行计划
