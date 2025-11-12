@@ -52,6 +52,8 @@ class TravelPlanController {
         return errorResponse(res, '缺少必要的旅行需求描述', 400);
       }
       
+      // 添加路由信息，帮助识别是哪个路径被调用
+      console.log('路由路径:', req.path, ' | 完整URL:', req.originalUrl);
       console.log('接收旅行计划生成请求，用户输入:', prompt);
 
       const result = await travelPlanService.generatePlan({ prompt });
