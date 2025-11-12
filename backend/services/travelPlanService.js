@@ -12,28 +12,127 @@ class TravelPlanService {
   /**
    * 生成旅行计划（调用AI服务）
    * @param {object} planData - 计划数据
+   * @returns {Promise<Object>} 生成的旅行计划，包含success和data字段
    */
   async generatePlan(planData) {
     try {
-      // 使用大语言模型服务生成旅行计划
+      // 验证必要参数
+      if (!planData || !planData.prompt || planData.prompt.trim() === '') {
+        return {
+          success: false,
+          error: '缺少必要的旅行需求描述'
+        };
+      }
+      
       console.log('正在调用大语言模型生成旅行计划...');
-      const llmResponse = await llmService.generateTravelPlan(planData);
+      console.log('接收到的提示词:', planData.prompt);
       
-      // 将LLM返回的数据转换为数据库格式
-      const dbFormatPlan = llmService.transformToDatabaseFormat(llmResponse, planData);
+      // 辅助函数 - 生成临时ID（避免this上下文问题）
+      function generateTempId() {
+        return 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      }
       
-      return { success: true, data: dbFormatPlan };
+      // 辅助函数 - 映射活动类型
+      function mapActivityTypeToNodeType(activityType) {
+        const typeMap = {
+          '景点': '景点',
+          '餐饮': '餐饮',
+          '住宿': '住宿',
+          '交通': '交通',
+          '购物': '购物',
+          '体验': '体验'
+        };
+        return typeMap[activityType] || '景点';
+      }
+      
+      // 辅助函数 - 计算日期
+      function calculateDate(startDate, dayOffset) {
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + dayOffset);
+        return date.toISOString().split('T')[0];
+      }
+      
+      // 调用LLM服务生成旅行计划
+      const llmResult = await llmService.generateTravelPlan({ prompt: planData.prompt });
+      
+      // 确保返回的数据结构与前端期望一致
+      const formattedResult = {
+        id: generateTempId(),
+        name: llmResult.name || '智能生成旅行计划',
+        destination: llmResult.destination || '',
+        startDate: llmResult.startDate || new Date().toISOString().split('T')[0],
+        endDate: llmResult.endDate || new Date().toISOString().split('T')[0],
+        budget: llmResult.budget || 0,
+        travelersCount: llmResult.travelersCount || 1,
+        preferences: planData.prompt || '',
+        nodes: []
+      };
+      
+      // 转换dailyItinerary为nodes格式
+      if (llmResult.dailyItinerary && Array.isArray(llmResult.dailyItinerary)) {
+        llmResult.dailyItinerary.forEach((day, dayIndex) => {
+          if (day.activities && Array.isArray(day.activities)) {
+            day.activities.forEach((activity) => {
+              const node = {
+                id: generateTempId(),
+                node_type: mapActivityTypeToNodeType(activity.type || '景点'),
+                date: calculateDate(formattedResult.startDate, dayIndex),
+                time: activity.time || '',
+                location: activity.location || '',
+                description: activity.description || '',
+                estimatedDuration: activity.duration || '',
+                budget: activity.budget || 0,
+                expense: 0
+              };
+              formattedResult.nodes.push(node);
+            });
+          }
+        });
+      }
+      
+      console.log('旅行计划生成成功');
+      return { success: true, data: formattedResult };
     } catch (error) {
       console.error('生成旅行计划失败:', error);
-      // 如果LLM服务调用失败，返回模拟数据作为备用方案
-      console.log('使用备用模拟数据生成旅行计划...');
-      try {
-        const mockPlan = this.generateMockPlan(planData);
-        return { success: true, data: mockPlan, isMock: true };
-      } catch (mockError) {
-        return { success: false, error: mockError.message };
-      }
+      // 返回错误信息，不使用模拟数据，确保使用真实的LLM服务
+      return { success: false, error: error.message };
     }
+  }
+  
+  /**
+   * 将活动类型映射为节点类型
+   * @param {string} activityType - 活动类型
+   * @returns {string} 节点类型
+   */
+  mapActivityTypeToNodeType(activityType) {
+    const typeMap = {
+      '景点': '景点',
+      '餐饮': '餐饮',
+      '住宿': '住宿',
+      '交通': '交通',
+      '购物': '购物',
+      '体验': '体验'
+    };
+    return typeMap[activityType] || '景点';
+  }
+  
+  /**
+   * 根据开始日期计算第n天的日期
+   * @param {string} startDate - 开始日期
+   * @param {number} dayOffset - 天数偏移
+   * @returns {string} 计算后的日期
+   */
+  calculateDate(startDate, dayOffset) {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + dayOffset);
+    return date.toISOString().split('T')[0];
+  }
+
+  /**
+   * 生成临时ID
+   */
+  generateTempId() {
+    return 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
   
   /**

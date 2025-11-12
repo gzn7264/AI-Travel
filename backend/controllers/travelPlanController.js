@@ -11,11 +11,7 @@ class TravelPlanController {
    */
   getGeneratePlanValidators() {
     return [
-      body('destination').notEmpty().withMessage('目的地不能为空'),
-      body('start_date').isISO8601().withMessage('开始日期格式不正确'),
-      body('end_date').isISO8601().withMessage('结束日期格式不正确'),
-      body('budget').isNumeric().withMessage('预算必须是数字'),
-      body('travelers_count').isInt({ min: 1 }).withMessage('旅行人数必须大于0')
+      body('prompt').notEmpty().withMessage('提示词不能为空')
     ];
   }
 
@@ -32,7 +28,9 @@ class TravelPlanController {
   }
 
   /**
-   * 生成旅行计划
+   * 生成旅行计划（不保存到数据库）
+   * @param {Object} req - Express请求对象
+   * @param {Object} res - Express响应对象
    */
   async generatePlan(req, res) {
     try {
@@ -42,13 +40,47 @@ class TravelPlanController {
         return validationErrorResponse(res, errors.array());
       }
 
-      const result = await travelPlanService.generatePlan(req.body);
+      // 支持多种参数格式以兼容前端调用
+      let prompt = req.body.prompt || req.body.text || req.body.travelRequest;
+      
+      // 如果是完整的对象，尝试从中提取prompt
+      if (typeof prompt === 'object') {
+        prompt = prompt.prompt || prompt.text || JSON.stringify(prompt);
+      }
+      
+      if (!prompt || prompt.trim() === '') {
+        return errorResponse(res, '缺少必要的旅行需求描述', 400);
+      }
+      
+      console.log('接收旅行计划生成请求，用户输入:', prompt);
+
+      const result = await travelPlanService.generatePlan({ prompt });
       
       if (!result.success) {
         return errorResponse(res, result.error, 400);
       }
       
-      return successResponse(res, '生成旅行计划成功', result.data);
+      // 确保返回的数据包含所有前端需要的字段
+      const formattedResult = {
+        id: `temp_${Date.now()}`, // 生成临时ID
+        title: result.data.name || '旅行计划',
+        destination: result.data.destination,
+        startDate: result.data.startDate || new Date().toISOString().split('T')[0],
+        endDate: result.data.endDate,
+        days: result.data.days,
+        travelers: result.data.travelersCount || 1,
+        budget: result.data.budget || 0,
+        overview: result.data.overview,
+        dailyItinerary: result.data.dailyItinerary,
+        status: 'preview',
+        createdAt: new Date().toISOString(),
+        // 保留原始结果中的所有字段
+        ...result.data
+      };
+      
+      console.log('旅行计划生成成功，返回数据格式已对齐前端');
+      
+      return successResponse(res, '生成旅行计划成功', formattedResult);
     } catch (error) {
       console.error('生成旅行计划控制器错误:', error);
       return errorResponse(res, '生成旅行计划失败', 500);

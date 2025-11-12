@@ -172,10 +172,16 @@ const generateTravelPlan = async (requirement) => {
   loading.value = true;
   showPlanSection.value = true;
   
+  // 为用户输入添加简单的prompt前缀
+  const enhancedPrompt = `请作为专业旅行规划师，根据以下需求生成详细的旅行计划：
+${requirement}
+
+请以JSON格式返回包含旅行天数、每日行程安排、景点推荐、餐饮建议、住宿推荐和交通安排的完整计划。`;
+  
   try {
     // 调用后端百炼大语言模型API，设置180秒超时
     const response = await axiosInstance.post('/plans/generate', {
-      prompt: requirement
+      prompt: enhancedPrompt
     }, {
       timeout: 180000 // 180秒超时
     });
