@@ -1,41 +1,18 @@
-// 模拟API延迟
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+import axiosInstance from './axiosInstance';
 
 // 旅行计划服务
 export default {
   // 生成旅行计划
   async generatePlan(travelRequest) {
     try {
-      // 模拟API调用延迟
-      await delay(2000);
-      
-      // 模拟数据验证
-      if (!travelRequest.destination) {
-        throw new Error('请指定目的地');
-      }
-      
-      if (!travelRequest.days || travelRequest.days < 1) {
-        throw new Error('请指定有效的旅行天数');
-      }
-      
-      // 生成模拟的旅行计划
-      const newPlan = this.generateMockPlan(travelRequest);
-      
-      // 保存到本地存储
-      let storedPlans = JSON.parse(localStorage.getItem('travelPlans') || '[]');
-      storedPlans.unshift(newPlan);
-      localStorage.setItem('travelPlans', JSON.stringify(storedPlans));
-      
-      return {
-        success: true,
-        data: newPlan,
-        message: '旅行计划生成成功'
-      };
+      // 发送请求到后端API生成旅行计划
+      const response = await axiosInstance.post('/travel-plans/generate', travelRequest);
+      return response;
     } catch (error) {
       console.error('生成旅行计划失败:', error);
       return {
         success: false,
-        error: error.message || '生成计划失败，请稍后重试'
+        error: error.response?.data?.message || error.message || '生成计划失败，请稍后重试'
       };
     }
   },
@@ -344,26 +321,14 @@ export default {
   // 获取旅行计划详情
   async getPlanDetail(planId) {
     try {
-      // 模拟API调用延迟
-      await delay(600);
-      
-      // 从本地存储获取计划列表
-      const storedPlans = JSON.parse(localStorage.getItem('travelPlans') || '[]');
-      const plan = storedPlans.find(p => p.id === planId);
-      
-      if (!plan) {
-        throw new Error('未找到该旅行计划');
-      }
-      
-      return {
-        success: true,
-        data: plan
-      };
+      // 发送请求到后端API获取旅行计划详情
+      const response = await axiosInstance.get(`/travel-plans/${planId}`);
+      return response;
     } catch (error) {
       console.error('获取旅行计划详情失败:', error);
       return {
         success: false,
-        error: error.message || '获取计划详情失败，请稍后重试'
+        error: error.response?.data?.message || error.message || '获取计划详情失败，请稍后重试'
       };
     }
   },
@@ -371,37 +336,14 @@ export default {
   // 更新旅行计划
   async updatePlan(planId, updatedData) {
     try {
-      // 模拟API调用延迟
-      await delay(800);
-      
-      // 从本地存储获取计划列表
-      const storedPlans = JSON.parse(localStorage.getItem('travelPlans') || '[]');
-      const planIndex = storedPlans.findIndex(p => p.id === planId);
-      
-      if (planIndex === -1) {
-        throw new Error('未找到该旅行计划');
-      }
-      
-      // 更新计划数据
-      storedPlans[planIndex] = {
-        ...storedPlans[planIndex],
-        ...updatedData,
-        updatedAt: new Date().toISOString()
-      };
-      
-      // 保存到本地存储
-      localStorage.setItem('travelPlans', JSON.stringify(storedPlans));
-      
-      return {
-        success: true,
-        data: storedPlans[planIndex],
-        message: '旅行计划更新成功'
-      };
+      // 发送请求到后端API更新旅行计划
+      const response = await axiosInstance.put(`/travel-plans/${planId}`, updatedData);
+      return response;
     } catch (error) {
       console.error('更新旅行计划失败:', error);
       return {
         success: false,
-        error: error.message || '更新计划失败，请稍后重试'
+        error: error.response?.data?.message || error.message || '更新计划失败，请稍后重试'
       };
     }
   },
@@ -523,28 +465,14 @@ export default {
   // 获取热门目的地推荐
   async getRecommendedDestinations() {
     try {
-      // 模拟API调用延迟
-      await delay(600);
-      
-      // 模拟热门目的地数据
-      const recommendedDestinations = [
-        { id: '1', name: '北京', description: '中国首都，历史文化名城', imageUrl: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' },
-        { id: '2', name: '上海', description: '国际大都市，现代化风情', imageUrl: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' },
-        { id: '3', name: '成都', description: '天府之国，美食之都', imageUrl: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' },
-        { id: '4', name: '杭州', description: '人间天堂，西湖美景', imageUrl: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' },
-        { id: '5', name: '西安', description: '十三朝古都，兵马俑', imageUrl: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' },
-        { id: '6', name: '重庆', description: '山城雾都，火锅之乡', imageUrl: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' }
-      ];
-      
-      return {
-        success: true,
-        data: recommendedDestinations
-      };
+      // 发送请求到后端API获取热门目的地推荐
+      const response = await axiosInstance.get('/travel-plans/recommended-destinations');
+      return response;
     } catch (error) {
       console.error('获取推荐目的地失败:', error);
       return {
         success: false,
-        error: '获取推荐失败，请稍后重试'
+        error: error.response?.data?.message || '获取推荐失败，请稍后重试'
       };
     }
   }

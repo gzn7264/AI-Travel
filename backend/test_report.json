@@ -1,0 +1,556 @@
+{
+  "tests": [
+    {
+      "name": "用户注册测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 400",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 400\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:84:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runAuthTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:83:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:348:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "User-Agent": "axios/1.13.2",
+            "Content-Length": "144",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "post",
+          "url": "http://localhost:3000/api/auth/register",
+          "data": "{\"email\":\"test_user_1762931739760@example.com\",\"password\":\"Test@123456\",\"nickname\":\"测试用户\",\"avatar_url\":\"https://example.com/avatar.jpg\"}",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 400
+      }
+    },
+    {
+      "name": "用户登录测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 400",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 400\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:93:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runAuthTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:92:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:348:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "User-Agent": "axios/1.13.2",
+            "Content-Length": "72",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "post",
+          "url": "http://localhost:3000/api/auth/login",
+          "data": "{\"email\":\"test_user_1762931739760@example.com\",\"password\":\"Test@123456\"}",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 400
+      }
+    },
+    {
+      "name": "获取用户信息测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:106:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runAuthTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:105:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:348:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "get",
+          "url": "http://localhost:3000/api/auth/me",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    },
+    {
+      "name": "更新用户信息测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:116:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runAuthTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:115:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:348:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Content-Length": "83",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "put",
+          "url": "http://localhost:3000/api/auth/me",
+          "data": "{\"nickname\":\"更新后的昵称\",\"avatar_url\":\"https://example.com/new_avatar.jpg\"}",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    },
+    {
+      "name": "修改密码测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:129:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runAuthTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:128:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:348:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Content-Length": "62",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "put",
+          "url": "http://localhost:3000/api/auth/password",
+          "data": "{\"old_password\":\"Test@123456\",\"new_password\":\"NewPass@123456\"}",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    },
+    {
+      "name": "生成旅行计划测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:154:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runTravelPlanTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:153:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:349:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Content-Length": "117",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "post",
+          "url": "http://localhost:3000/api/plans/generate",
+          "data": "{\"destination\":\"北京\",\"start_date\":\"2024-06-01\",\"end_date\":\"2024-06-05\",\"preferences\":[\"美食\",\"文化\",\"购物\"]}",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    },
+    {
+      "name": "保存旅行计划测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:172:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runTravelPlanTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:171:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:349:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Content-Length": "337",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "post",
+          "url": "http://localhost:3000/api/plans",
+          "data": "{\"plan_name\":\"北京五日游\",\"destination\":\"北京\",\"start_date\":\"2024-06-01\",\"end_date\":\"2024-06-05\",\"preferences\":[\"美食\",\"文化\",\"购物\"],\"budget\":5000,\"currency\":\"CNY\",\"nodes\":[{\"day\":1,\"time\":\"10:00\",\"activity\":\"参观故宫\",\"location\":\"北京市东城区景山前街4号\",\"description\":\"参观明清两代的皇家宫殿\"}]}",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    },
+    {
+      "name": "获取旅行计划列表测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:198:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runTravelPlanTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:197:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:349:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "get",
+          "url": "http://localhost:3000/api/plans",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    },
+    {
+      "name": "获取旅行计划详情测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:209:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runTravelPlanTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:208:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:349:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "get",
+          "url": "http://localhost:3000/api/plans/null",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    },
+    {
+      "name": "更新旅行计划测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:219:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runTravelPlanTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:218:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:349:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Content-Length": "60",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "put",
+          "url": "http://localhost:3000/api/plans/null",
+          "data": "{\"plan_name\":\"北京五日游（更新版）\",\"budget\":6000}",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    },
+    {
+      "name": "获取旅行计划统计测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:232:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runTravelPlanTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:231:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:349:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "get",
+          "url": "http://localhost:3000/api/plans/stats",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    },
+    {
+      "name": "从语音识别中提取费用测试",
+      "passed": false,
+      "error": {
+        "message": "Request failed with status code 401",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 401\n    at settle (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:2106:12)\n    at IncomingMessage.handleStreamEnd (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:3491:11)\n    at IncomingMessage.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\node_modules\\axios\\dist\\node\\axios.cjs:4731:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:290:22\n    at async runTest (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:52:5)\n    at async runExpenseTests (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:289:3)\n    at async main (D:\\Study\\P1S1\\AI4coding\\AITravel\\AI-Travel\\backend\\test\\apiTest.js:350:5)",
+        "config": {
+          "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+          },
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "timeout": 0,
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN",
+          "maxContentLength": -1,
+          "maxBodyLength": -1,
+          "env": {},
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer null",
+            "User-Agent": "axios/1.13.2",
+            "Content-Length": "86",
+            "Accept-Encoding": "gzip, compress, deflate, br"
+          },
+          "method": "post",
+          "url": "http://localhost:3000/api/expenses/extract/audio",
+          "data": "{\"audioText\":\"今天去了故宫门票120元，午餐花了88元，交通费用40元\"}",
+          "allowAbsoluteUrls": true
+        },
+        "code": "ERR_BAD_REQUEST",
+        "status": 401
+      }
+    }
+  ],
+  "passed": 0,
+  "failed": 12
+}

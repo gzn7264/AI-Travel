@@ -3,7 +3,7 @@
 
 # 忽略文档文件
 Web版AI旅行规划师.md
-需求.md
+说明.md
 
 # 通用忽略规则
 .DS_Store
@@ -27,3 +27,6 @@ yarn-error.log
 # 构建输出
 dist/
 build/
+
+# 后端TodoList（不上传到GitHub）
+backend_todolist.md
